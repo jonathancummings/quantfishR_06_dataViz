@@ -66,8 +66,8 @@ If we only wish to look at the data from a single column we could use a bar or h
 
 ```{r data explore, echo=TRUE}
 # exploratory plots
-ggplot(top_n(neus_data,100),aes(COMNAME))+geom_bar()
-ggdata<-sample_n(neus_data,10000)
+ggplot(slice(neus_data,1:50),aes(COMNAME))+geom_bar()
+ggdata<-sample_n(neus_data,100000)
 ggplot(ggdata,aes(BIOMASS))+geom_histogram()
 ```
 
