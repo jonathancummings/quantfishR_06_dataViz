@@ -66,29 +66,30 @@ If we only wish to look at the data from a single column we could use a bar or h
 
 ```{r data explore, echo=TRUE}
 # exploratory plots
-ggplot(sample_n(neus_data,100),aes(COMNAME))+geom_bar()
+ggplot(top_n(neus_data,100),aes(COMNAME))+geom_bar()
 ggdata<-sample_n(neus_data,10000)
 ggplot(ggdata,aes(BIOMASS))+geom_histogram()
 ```
 
 Recall that an aesthetics and geometry layer are required so you may note them in the examples.  If we only provide the data layer back into the biomass histogram what do we get?
-```{r data explore2, echo=TRUE}
+```{r data explore2, echo=TRUE, eval=FALSE}
 # exploratory plots
 ggplot(ggdata)
 ```
 
 ##### Aesthetics layer
-The second layer is our aesthetics layer. This is where we identify the scales onto which we want to display our data. This can be thought of as a projection similar to the mapping of geographic data, or the structure into which our data will be placed.  In essence we are defining the scaffolding that or visualization will be constructed in.  
-Depending on the type of visualization you desire you may need a specific form of structure.  In the bar chart and histogram we created only a single variable was being plotted, so only one input to the aesthetics layer was provided.  If we add our aesthetics layer back in what do we get?
-```{r data explore3, echo=TRUE}
+The second layer is our aesthetics layer. This is where we identify the scales onto which we want to display our data. This can be thought of as a projection similar to the mapping of geographic data, or the structure into which our data will be placed.  In essence we are defining the scaffolding that our visualization will be constructed in.
+
+Depending on the type of visualization you desire you may need a specific form of structure. In the bar chart and histogram we created only a single variable was being plotted, so only one input to the aesthetics layer was provided.  If we add our aesthetics layer back in what do we get?
+```{r data explore3, echo=TRUE, eval=FALSE}
 # exploratory plots
 ggplot(ggdata,aes(BIOMASS))
 ```
-We can see the structure or data will be visualized with, but note that there is no data visualized.
 
-If we were creating an 2d plot, e.g., a plot of x by y, our aesthetics layer would require a different structure, with an x and a y component.
-e.g, 
-```{r data explore4, echo=TRUE}
+We can see the structure our data will be visualized with, but note that there is no data visualized.
+
+If we were creating an 2d plot, e.g., a plot of x by y, our aesthetics layer would require a different structure, with an x and a y component.  For example, what will this give you? 
+```{r data explore4, echo=TRUE, eval=FALSE}
 # exploratory plots
 ggplot(ggdata,aes(BIOMASS,ABUNDANCE))
 ```
@@ -106,15 +107,15 @@ When you think about visualization the aspect you probably tend to think most ab
 See: <https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf>
 
 #### Combining layers to create a visualization.
-These three layers are combined using the 'ggplot()' function to create a visualization. We give ggplot the data we want to plot, the aesthetic structure into which to place the data, and the visualization to use for that data.  When the layers are combined correctly we get our visualization, e.g.,
+These three layers are combined using the 'ggplot()' function to create a visualization. We give ggplot the data we want to plot, the aesthetic structure into which to place the data, and the visualization to use for that data.  When the layers are combined correctly we get our visualization.  For example, what will this give us?
 ```{r data explore5, echo=TRUE, warning=FALSE}
 # exploratory plots
 ggplot(ggdata,aes(BIOMASS,ABUNDANCE)) + geom_point()
 ```
 
-If we try to visualize our data improperly - using a geometry without the correct structure to support it - we will get an error.
+If we try to visualize our data improperly - using a geometry without the correct structure to support it - we will get an error.  What happens if you try to run the following?
 
-```{r data explore6, eval=FALSE, error=TRUE, include=FALSE}
+```{r data explore6, echo=TRUE, eval=FALSE, error=TRUE}
 # exploratory plots
 ggplot(ggdata,aes(BIOMASS)) + geom_point()
 ggplot(ggdata,aes(BIOMASS,ABUNDANCE)) + geom_histogram()
@@ -126,12 +127,12 @@ In a sense creating a data visualization with ggplot2 is like creating an elabor
 knitr::include_graphics("images/Layer Viz.png")
 ```
 
-Here we correctly supply our data layer, a 2d structure, and a geometry that plots pairs of points in that structure:
+Here we correctly supply our data layer, a 2d structure, and a geometry that works with that two variable structure:
 ```{r data viz exploration, echo=TRUE, warning=FALSE}
 # plot two variables
 ggdata2<-sample_n(ggdata,1000)
 ggplot(ggdata2,aes(BIOMASS,ABUNDANCE)) +
-  geom_point()
+  geom_jitter()
 ```
 
 The beauty of ggplot2 is that as long as your structure is sound, you can add as many layers as you want to you cake.  For example, 
@@ -139,7 +140,7 @@ The beauty of ggplot2 is that as long as your structure is sound, you can add as
 ```{r data viz exploration2, echo=TRUE, warning=FALSE}
 # plot two variables
 ggplot(ggdata2,aes(BIOMASS,ABUNDANCE)) +
-  geom_point() + geom_smooth(method=lm)
+  geom_point() + geom_smooth(method=lm) + geom_rug()
 ```
 
 In this case we provide our second geometry with additional input to smooth using a linear model.  As you can see on the cheat sheet some geometries can take, or expect, additional arguments.
