@@ -52,6 +52,7 @@ skim(neus_data)
 ```
 
 Other useful functions for looking at a data frame are 'str()', 'glimpse()' and 'names()'.  To look at individual columns you may wish to use the 'class()', 'head()', 'unique()', and 'length()' functions, or some combination thereof.  e.g.,
+
 ```{r column summary, echo=TRUE}
 # summarize data column
 # BIOMASS; COMNAME (Common species name)
