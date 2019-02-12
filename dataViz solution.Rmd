@@ -1,7 +1,7 @@
 ---
 title: "Data Viz ggplot2 - solution"
 author: "Jonathan Cummings"
-date: "February 11, 2019"
+date: "February 12, 2019"
 output:
   html_document: default
 ---
@@ -33,15 +33,7 @@ Let's start by familiarizing ourselves with our data.  First we need to get our 
 ```{r data, echo=TRUE}
 #### read in data
 # read in data
-neus_data<-read_csv("data/neus_data.csv",guess_max = 16000) 
-# get species data
-spp<-read_csv("data/neus_svspp.csv") 
-# get stratum data
-strat<-read_csv("data/neus_svstrata.csv") 
-# join species and stratum identification data to dataframe  
-neus_data<-neus_data %>% 
-  left_join(spp) %>%
-  left_join(strat, by=c("STRATUM"="StratumCode"))
+gg_data<-read_csv("data/emevtr2017.csv")
 ```
 
 Let's explore what this data is, and start to understand it for ourselves. A useful way to quickly summarize all of the data in our 'tibble' is to use the `skim()` function. 
@@ -49,15 +41,15 @@ Let's explore what this data is, and start to understand it for ourselves. A use
 ```{r data summary, echo=TRUE, warning=FALSE}
 # summarize data
 skim_with(integer = list(hist = NULL),numeric = list(hist = NULL)) #Suppress histograms
-skim(neus_data)
+skim(gg_data)
 ```
 
 Other useful functions for looking at a data frame are 'str()', 'glimpse()' and 'names()'.  To look at individual columns you may wish to use the 'class()', 'head()', 'unique()', and 'length()' functions, or some combination thereof.  e.g.,
 ```{r column summary, echo=TRUE}
 # summarize data column
-# BIOMASS; COMNAME (Common species name)
-class(neus_data$BIOMASS); class(neus_data$COMNAME)
-head(unique(neus_data$BIOMASS));head(unique(neus_data$COMNAME))
+# emDISCWEIGHT; SpeciesName (Common species name)
+class(gg_data$emDISCWEIGHT); class(gg_data$SpeciesName)
+head(unique(gg_data$emDISCWEIGHT));head(unique(gg_data$SpeciesName))
 ```
 *Assign columns to individuals for short presentations to the classroom on each column.*
 
@@ -67,15 +59,16 @@ If we only wish to look at the data from a single column we could use a bar or h
 
 ```{r data explore, echo=TRUE}
 # exploratory plots
-ggplot(slice(neus_data,1:100),aes(COMNAME))+geom_bar()
-ggdata<-sample_n(neus_data,10000)
-ggplot(ggdata,aes(BIOMASS))+geom_histogram()
+gg_data_bar<-gg_data %>% 
+  filter(SpeciesName %in% c("COD ATLANTIC","BSB","SKATE","SCUL","MONK"))
+ggplot(slice(gg_data_bar,1:25),aes(SpeciesName))+geom_bar()
+ggplot(gg_data,aes(emDISCWEIGHT))+geom_histogram()
 ```
 
-Recall that an aesthetics and geometry layer are required so you may note them in the examples.  If we only provide the data layer back into the biomass histogram what do we get?
+Recall that an aesthetics and geometry layer are required so you may note them in the examples.  If we only provide the data layer back into the emDISCWEIGHT histogram what do we get?
 ```{r data explore2, echo=TRUE}
 # exploratory plots
-ggplot(ggdata)
+ggplot(gg_data)
 ```
 
 ##### Aesthetics layer
@@ -83,7 +76,7 @@ The second layer is our aesthetics layer. This is where we identify the scales o
 Depending on the type of visualization you desire you may need a specific form of structure.  In the bar chart and histogram we created only a single variable was being plotted, so only one input to the aesthetics layer was provided.  If we add our aesthetics layer back in what do we get?
 ```{r data explore3, echo=TRUE}
 # exploratory plots
-ggplot(ggdata,aes(BIOMASS))
+ggplot(gg_data,aes(emDISCWEIGHT))
 ```
 
 We can see the structure our data will be visualized with, but note that there is no data visualized.
@@ -91,7 +84,7 @@ We can see the structure our data will be visualized with, but note that there i
 If we were creating an 2d plot, e.g., a plot of x by y, our aesthetics layer would require a different structure, with an x and a y component.  For example, what will this give you? 
 ```{r data explore4, echo=TRUE}
 # exploratory plots
-ggplot(ggdata,aes(BIOMASS,ABUNDANCE))
+ggplot(gg_data,aes(emDISCWEIGHT,emDISCCOUNT))
 ```
 
 This gives us a different structure for our 2d plot, but still no visualization.
@@ -110,15 +103,15 @@ See: <https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.
 These three layers are combined using the 'ggplot()' function to create a visualization. We give ggplot the data we want to plot, the aesthetic structure into which to place the data, and the visualization to use for that data.  When the layers are combined correctly we get our visualization.  For example, what will this give us?
 ```{r data explore5, echo=TRUE, warning=FALSE}
 # exploratory plots
-ggplot(ggdata,aes(BIOMASS,ABUNDANCE)) + geom_point()
+ggplot(gg_data,aes(emDISCWEIGHT,emDISCCOUNT)) + geom_point()
 ```
 
 If we try to visualize our data improperly - using a geometry without the correct structure to support it - we will get an error.  What happens if you try to run the following?
 
 ```{r data explore6, echo=TRUE, eval=FALSE, error=TRUE}
 # exploratory plots
-ggplot(ggdata,aes(BIOMASS)) + geom_point()
-ggplot(ggdata,aes(BIOMASS,ABUNDANCE)) + geom_histogram()
+ggplot(gg_data,aes(emDISCWEIGHT)) + geom_point()
+ggplot(gg_data,aes(emDISCWEIGHT,emDISCCOUNT)) + geom_histogram()
 ```
 
 In a sense creating a data visualization with ggplot2 is like creating an elaborate tiered layer cake.  If the supporting layer is incorrect your cake is likely to collapse. Our visualizations are constructed one layer at a time (Figure 4 &ast;), and the layers are combined with a '+'. The data and aesthetics layers are typically provided to the ggplot() function, and the geometry layer or layers follow.
@@ -130,8 +123,7 @@ knitr::include_graphics("images/Layer Viz.png")
 Here we correctly supply our data layer, a 2d structure, and a geometry that works with that two variable structure:
 ```{r data viz exploration, echo=TRUE, warning=FALSE}
 # plot two variables
-ggdata2<-sample_n(ggdata,1000)
-ggplot(ggdata2,aes(BIOMASS,ABUNDANCE)) +
+ggplot(gg_data,aes(emDISCWEIGHT,emDISCCOUNT)) +
   geom_jitter()
 ```
 
@@ -139,7 +131,7 @@ The beauty of ggplot2 is that as long as your structure is sound, you can add as
 
 ```{r data viz exploration2, echo=TRUE, warning=FALSE}
 # plot two variables
-ggplot(ggdata2,aes(BIOMASS,ABUNDANCE)) +
+ggplot(gg_data,aes(emDISCWEIGHT,emDISCCOUNT)) +
   geom_point() + geom_smooth(method=lm) + geom_rug()
 ```
 

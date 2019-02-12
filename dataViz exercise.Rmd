@@ -1,7 +1,7 @@
 ---
-title: "Data Viz ggplot2 - solution"
+title: "Data Viz ggplot2 - exercise"
 author: "Jonathan Cummings"
-date: "February 11, 2019"
+date: "February 12, 2019"
 output:
   html_document: default
 ---
@@ -39,7 +39,7 @@ Let's explore what this data is, and start to understand it for ourselves. A use
 
 ```{r data summary, echo=TRUE, warning=FALSE}
 # summarize data
-
+[r code here]
 ```
 
 Other useful functions for looking at a data frame are 'str()', 'glimpse()' and 'names()'.  To look at individual columns you may wish to use the 'class()', 'head()', 'unique()', and 'length()' functions, or some combination thereof.  e.g.,
